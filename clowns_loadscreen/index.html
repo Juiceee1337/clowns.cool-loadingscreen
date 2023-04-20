@@ -1,0 +1,80 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+    <link rel="stylesheet" href="assets/style.css">
+    <title>github.com/tekkenkkk</title>
+  </head>
+  <body>
+    <div id="volumePanel">
+      <i class="fas fa-volume-down" style="margin-right:5px"></i>
+      <input type="range" min="1" max="100" id="volumeSlider" value="25">
+      <i class="fas fa-volume-up" style="margin-left:5px"></i>
+    </div>
+    <div id="videoInputPanel">
+      <h1 id="videoInputText">Zmień film</h1>
+      <input type="text" id="videoInput" placeholder="https://youtube.com/watch?v=K09_5IsgGe8" autocorrect="off" autocomplete="off">
+      <input type="submit" onclick="videoChange()" id="videoInputSubmit" value="Ok">
+    </div>
+    <img id="cursor" src="assets/cursor.png">
+    <img id="logo" src="assets/logo.png">
+    <script>
+      window.onload = function() {
+        document.body.addEventListener("mousemove", function(event) {
+          var cursor = document.getElementById("cursor");
+          var x = event.pageX - 10;
+          var y = event.pageY - 7;
+          cursor.style.left = x;
+          cursor.style.top = y;
+        });
+      };
+      var videoId = '3N6s5fob5uo';
+      var player, videoId = localStorage.getItem("loadscreen-video") || videoId,
+        scriptelement = document.createElement("script");
+      scriptelement.src = "https://www.youtube.com/iframe_api";
+      var scripttag = document.getElementsByTagName("script")[0];
+
+      function onYouTubeIframeAPIReady(a) {
+        setTimeout(() => {
+            "restart" === a && (videoId = localStorage.getItem("loadscreen-video"), player = null), player = new YT.Player("video", {
+                videoId: videoId,
+                playerVars: {
+                    playlist: videoId,
+                    autoplay: 1,
+                    controls: 0,
+                    iv_load_policy: 3,
+                    disablekb: 1,
+                    enablejsapi: 1,
+                    loop: 1,
+                    vq: "highres"
+                },
+                events: {
+                    onReady: onStart,
+                    onError: onError
+                }
+            })
+        }, 500)
+      }
+
+      scripttag.parentNode.insertBefore(scriptelement, scripttag);
+      var volumeSlider = document.getElementById("volumeSlider");
+
+      function onStart(a) {
+        var b = localStorage.getItem(`volumeSlider`) || 25;
+        a.target.setVolume(b), a.target.setPlaybackQuality("highres"), a.target.playVideo(), volumeSlider.setAttribute("value", b), onVolume(), volumeSlider.addEventListener("input", onVolume, !1), document.getElementById("videoInput").value = `https://youtube.com/watch?v=${videoId}`, document.getElementById("volumePanel").style.left = "-2%", document.getElementById("videoInputPanel").style.right = "2%", document.getElementById("logo").style.bottom = "1%"
+      }
+
+      function onError() {
+        document.getElementById("video").style.display = "none"
+      }
+
+      function onVolume() {
+        value = volumeSlider.value, volumeSlider.style.background = `linear-gradient(90deg, #ff0000 ${value}%, #5f5f5f ${value}%)`, player.setVolume(value - 1), localStorage.setItem(`volumeSlider`, value)
+      }
+
+      function videoChange() {
+        localStorage.setItem("loadscreen-video", document.getElementById("videoInput").value.match(/(?:youtube(?:-nocookie)?\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)[1]), document.getElementById("video").remove(), (newVideo = document.createElement("video")).setAttribute("id", "video"), document.body.appendChild(newVideo), onYouTubeIframeAPIReady("restart")
+      }
+    </script>
+    <div id="video"></div>
+  </body>
+</html>
